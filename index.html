@@ -41,11 +41,8 @@
                 const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
                 const mesh = new THREE.Mesh(geometry, material);
 
-                // Ajustar orientación
-                mesh.rotation.set(-Math.PI / 2, 0, Math.PI); // Corregir la rotación
-
-                // Detectar escala y ajustar
-                adjustScale(mesh);
+                // Ajustar orientación y escala
+                correctOrientationAndScale(mesh);
 
                 // Exportar a GLB
                 exportGLB(mesh);
@@ -54,10 +51,10 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function adjustScale(mesh) {
+        function correctOrientationAndScale(mesh) {
             const boundingBox = new THREE.Box3().setFromObject(mesh);
             const size = boundingBox.getSize(new THREE.Vector3());
-            console.log("Tamaño detectado del modelo (x, y, z):", size);
+            console.log("Tamaño original del modelo (x, y, z):", size);
 
             let scaleFactor = 1;
             if (size.y > 1000) {
@@ -68,8 +65,16 @@
                 scaleFactor = 0.01; // De cm a metros
             }
 
+            // Aplicar escala sin alterar la relación de tamaño
             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
             console.log(`Escalado con factor: ${scaleFactor}`);
+
+            // Corregir orientación aplicando matriz de transformación
+            const rotationMatrix = new THREE.Matrix4();
+            rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, Math.PI)); // 90° en X y 180° en Z
+            mesh.applyMatrix4(rotationMatrix);
+
+            console.log("Rotación aplicada correctamente.");
         }
 
         function exportGLB(model) {
