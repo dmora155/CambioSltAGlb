@@ -69,11 +69,19 @@
             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
             console.log(`Escalado con factor: ${scaleFactor}`);
 
-            // Corregir orientación aplicando matriz de transformación
+            // Aplicar rotaciones para corregir la orientación
             const rotationMatrix = new THREE.Matrix4();
-            rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, Math.PI)); // 90° en X y 180° en Z
-            mesh.applyMatrix4(rotationMatrix);
+            
+            // Opción 1: Rotar 90° en X (prueba si corrige el problema)
+            // rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
 
+            // Opción 2: Rotar 90° en X y 90° en Z
+            // rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, Math.PI / 2));
+
+            // Opción 3: Rotar 90° en X y -90° en Y (prueba esta si sigue acostado)
+            rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, -Math.PI / 2, 0));
+
+            mesh.applyMatrix4(rotationMatrix);
             console.log("Rotación aplicada correctamente.");
         }
 
