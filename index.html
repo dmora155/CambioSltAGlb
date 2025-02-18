@@ -69,22 +69,25 @@
             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
             console.log(`Escalado con factor: ${scaleFactor}`);
 
-            // ✅ Detectar el eje más alto y aplicar UNA rotación precisa
+            // ✅ Detectar si el modelo está acostado y corregir su orientación
             const rotationMatrix = new THREE.Matrix4();
 
-            if (size.x > size.y && size.x > size.z) {
-                console.log("X es el eje más alto, rotamos 90° en Z.");
-                rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, 0, Math.PI / 2));
-            } else if (size.y > size.x && size.y > size.z) {
-                console.log("Y es el eje más alto, rotamos -90° en X.");
-                rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+            // Si el eje Z NO es el más alto, significa que está acostado y debemos girarlo
+            if (size.z < size.x || size.z < size.y) {
+                console.log("El modelo está acostado, rotando para que Z sea la altura.");
+
+                if (size.x > size.y) {
+                    console.log("Rotamos 90° en Y para levantar el modelo.");
+                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
+                } else {
+                    console.log("Rotamos -90° en X para levantar el modelo.");
+                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+                }
+
+                mesh.applyMatrix4(rotationMatrix);
             } else {
                 console.log("El modelo ya está correctamente orientado.");
-                return;
             }
-
-            mesh.applyMatrix4(rotationMatrix);
-            console.log("Rotación aplicada correctamente.");
         }
 
         function exportGLB(mesh) {
