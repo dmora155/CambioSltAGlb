@@ -75,15 +75,15 @@
             if (size.x > size.y && size.x > size.z) {
                 console.log("X es el eje más alto, rotamos 90° en Y.");
                 rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
+                mesh.applyMatrix4(rotationMatrix);
             } else if (size.y > size.x && size.y > size.z) {
                 console.log("Y es el eje más alto, rotamos -90° en X.");
                 rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+                mesh.applyMatrix4(rotationMatrix);
             } else {
                 console.log("El modelo ya está correctamente orientado.");
-                return;
             }
 
-            mesh.applyMatrix4(rotationMatrix);
             console.log("Rotación aplicada correctamente.");
         }
 
