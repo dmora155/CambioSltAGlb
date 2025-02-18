@@ -69,33 +69,28 @@
             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
             console.log(`Escalado con factor: ${scaleFactor}`);
 
-            // ✅ Detectar si el modelo no tiene su altura en Z y corregirlo
+            // ✅ Detectar qué eje es la base más estable
+            let baseEje = "Y"; // Por defecto, asumimos que Y es la base
+            if (size.x > size.y && size.x > size.z) {
+                baseEje = "X";
+            } else if (size.z > size.x && size.z > size.y) {
+                baseEje = "Z";
+            }
+
+            console.log(`El eje más estable para la base es: ${baseEje}`);
+
+            // Aplicar la rotación para que la base real quede apoyada en el suelo
             let rotationMatrix = new THREE.Matrix4();
 
-            if (size.z < size.x || size.z < size.y) {
-                console.log("El modelo está acostado, rotando para que Z sea la altura.");
-
-                if (size.x > size.y) {
-                    console.log("Rotamos 90° en Y.");
-                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
-                } else {
-                    console.log("Rotamos 90° en X.");
-                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
-                }
-
-                mesh.applyMatrix4(rotationMatrix);
+            if (baseEje === "X") {
+                console.log("Rotando -90° en Z para que X quede como base.");
+                rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, 0, -Math.PI / 2));
+            } else if (baseEje === "Z") {
+                console.log("Rotando 90° en X para que Z quede como base.");
+                rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
             }
 
-            // 🔄 Verificar de nuevo si la altura sigue mal y aplicar una segunda corrección si es necesario
-            boundingBox.setFromObject(mesh);
-            size = boundingBox.getSize(new THREE.Vector3());
-
-            if (size.z < size.x || size.z < size.y) {
-                console.log("Corrección extra: aplicando 180° en Y.");
-                let fixRotation = new THREE.Matrix4();
-                fixRotation.makeRotationFromEuler(new THREE.Euler(0, Math.PI, 0));
-                mesh.applyMatrix4(fixRotation);
-            }
+            mesh.applyMatrix4(rotationMatrix);
 
             console.log("Rotación aplicada correctamente.");
         }
