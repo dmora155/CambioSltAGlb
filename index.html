@@ -72,13 +72,13 @@
             // ✅ Detectar si el modelo está acostado y corregir su orientación
             const rotationMatrix = new THREE.Matrix4();
 
-            // Si el eje Z NO es el más alto, significa que está acostado y debemos girarlo
-            if (size.z < size.x || size.z < size.y) {
+            // Si el modelo no tiene su altura en Z, rotarlo
+            if (size.z < size.x && size.z < size.y) {
                 console.log("El modelo está acostado, rotando para que Z sea la altura.");
 
                 if (size.x > size.y) {
-                    console.log("Rotamos 90° en Y para levantar el modelo.");
-                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
+                    console.log("Rotamos -90° en Y para levantar el modelo.");
+                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, -Math.PI / 2, 0));
                 } else {
                     console.log("Rotamos -90° en X para levantar el modelo.");
                     rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
