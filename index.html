@@ -69,47 +69,13 @@
             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
             console.log(`Escalado con factor: ${scaleFactor}`);
 
-            // ✅ Detectar qué eje es la altura y corregir la orientación si es necesario
+            // ✅ Detectar el eje más alto y corregir la orientación
+            const rotationMatrix = new THREE.Matrix4();
+
             if (size.x > size.y && size.x > size.z) {
-                console.log("Eje X es el más alto, rotando 90° en Z para corregir.");
-                const rotationMatrix = new THREE.Matrix4();
-                rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, 0, Math.PI / 2));
-                mesh.applyMatrix4(rotationMatrix);
+                console.log("X es el eje más alto, rotamos 90° en Y.");
+                rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
             } else if (size.y > size.x && size.y > size.z) {
-                console.log("Eje Y es el más alto, rotando 90° en X para corregir.");
-                const rotationMatrix = new THREE.Matrix4();
-                rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
-                mesh.applyMatrix4(rotationMatrix);
-            } else {
-                console.log("El modelo ya está correctamente orientado.");
-            }
-
-            console.log("Rotación aplicada correctamente.");
-        }
-
-        function exportGLB(model) {
-            console.log("Iniciando exportación a GLB...");
-            const exporter = new THREE.GLTFExporter();
-
-            exporter.parse(model, function (gltf) {
-                console.log("GLB exportado correctamente.");
-
-                const blob = new Blob([gltf], { type: "model/gltf-binary" });
-                const url = URL.createObjectURL(blob);
-
-                console.log("URL del archivo GLB generado:", url);
-
-                // Crear un enlace de descarga
-                const downloadLink = document.createElement('a');
-                downloadLink.href = url;
-                downloadLink.download = 'modelo_convertido.glb';
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-
-                alert("Modelo GLB exportado y descargado correctamente.");
-            }, { binary: true });
-        }
-    </script>
-</body>
-</html>
+                console.log("Y es el eje más alto, rotamos -90° en X.");
+                rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+           
