@@ -45,7 +45,7 @@
                 correctOrientationAndScale(mesh);
 
                 // Exportar a GLB
-                exportGLB(mesh);
+                setTimeout(() => exportGLB(mesh), 500); // Espera antes de exportar
             };
 
             reader.readAsArrayBuffer(file);
@@ -78,4 +78,42 @@
             } else if (size.y > size.x && size.y > size.z) {
                 console.log("Y es el eje más alto, rotamos -90° en X.");
                 rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
-           
+            } else {
+                console.log("El modelo ya está correctamente orientado.");
+                return;
+            }
+
+            mesh.applyMatrix4(rotationMatrix);
+            console.log("Rotación aplicada correctamente.");
+        }
+
+        function exportGLB(mesh) {
+            console.log("Iniciando exportación a GLB...");
+            const exporter = new THREE.GLTFExporter();
+
+            // Crear un contenedor para exportar correctamente
+            const scene = new THREE.Scene();
+            scene.add(mesh);
+
+            exporter.parse(scene, function (gltf) {
+                console.log("GLB exportado correctamente.");
+
+                const blob = new Blob([gltf], { type: "model/gltf-binary" });
+                const url = URL.createObjectURL(blob);
+
+                console.log("URL del archivo GLB generado:", url);
+
+                // Crear un enlace de descarga
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = 'modelo_convertido.glb';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                alert("Modelo GLB exportado y descargado correctamente.");
+            }, { binary: true });
+        }
+    </script>
+</body>
+</html>
