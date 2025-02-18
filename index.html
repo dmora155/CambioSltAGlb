@@ -52,8 +52,8 @@
         }
 
         function correctOrientationAndScale(mesh) {
-            const boundingBox = new THREE.Box3().setFromObject(mesh);
-            const size = boundingBox.getSize(new THREE.Vector3());
+            let boundingBox = new THREE.Box3().setFromObject(mesh);
+            let size = boundingBox.getSize(new THREE.Vector3());
             console.log("Tamaño original del modelo (x, y, z):", size);
 
             let scaleFactor = 1;
@@ -69,25 +69,35 @@
             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
             console.log(`Escalado con factor: ${scaleFactor}`);
 
-            // ✅ Detectar si el modelo está acostado y corregir su orientación
-            const rotationMatrix = new THREE.Matrix4();
+            // ✅ Detectar si el modelo no tiene su altura en Z y corregirlo
+            let rotationMatrix = new THREE.Matrix4();
 
-            // Si el modelo no tiene su altura en Z, rotarlo
-            if (size.z < size.x && size.z < size.y) {
+            if (size.z < size.x || size.z < size.y) {
                 console.log("El modelo está acostado, rotando para que Z sea la altura.");
 
                 if (size.x > size.y) {
-                    console.log("Rotamos -90° en Y para levantar el modelo.");
-                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, -Math.PI / 2, 0));
+                    console.log("Rotamos 90° en Y.");
+                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
                 } else {
-                    console.log("Rotamos -90° en X para levantar el modelo.");
-                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+                    console.log("Rotamos 90° en X.");
+                    rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
                 }
 
                 mesh.applyMatrix4(rotationMatrix);
-            } else {
-                console.log("El modelo ya está correctamente orientado.");
             }
+
+            // 🔄 Verificar de nuevo si la altura sigue mal y aplicar una segunda corrección si es necesario
+            boundingBox.setFromObject(mesh);
+            size = boundingBox.getSize(new THREE.Vector3());
+
+            if (size.z < size.x || size.z < size.y) {
+                console.log("Corrección extra: aplicando 180° en Y.");
+                let fixRotation = new THREE.Matrix4();
+                fixRotation.makeRotationFromEuler(new THREE.Euler(0, Math.PI, 0));
+                mesh.applyMatrix4(fixRotation);
+            }
+
+            console.log("Rotación aplicada correctamente.");
         }
 
         function exportGLB(mesh) {
