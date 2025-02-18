@@ -69,19 +69,14 @@
             mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
             console.log(`Escalado con factor: ${scaleFactor}`);
 
-            // Aplicar rotaciones para corregir la orientación
-            const rotationMatrix = new THREE.Matrix4();
-            
-            // Opción 1: Rotar 90° en X (prueba si corrige el problema)
-            // rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
+            // ✅ Identificar el eje más alto y rotar si es necesario
+            if (size.y > size.x && size.y > size.z) {
+                console.log("Eje Y es el más alto, ajustando a Z (altura).");
+                const rotationMatrix = new THREE.Matrix4();
+                rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, 0)); // 🔄 Rotar 90° en X
+                mesh.applyMatrix4(rotationMatrix);
+            }
 
-            // Opción 2: Rotar 90° en X y 90° en Z
-            // rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, 0, Math.PI / 2));
-
-            // Opción 3: Rotar 90° en X y -90° en Y (prueba esta si sigue acostado)
-            rotationMatrix.makeRotationFromEuler(new THREE.Euler(Math.PI / 2, -Math.PI / 2, 0));
-
-            mesh.applyMatrix4(rotationMatrix);
             console.log("Rotación aplicada correctamente.");
         }
 
