@@ -70,16 +70,21 @@
             console.log(`Escalado con factor: ${scaleFactor}`);
 
             // ✅ Detectar el eje más alto y corregir la orientación
-            const rotationMatrix = new THREE.Matrix4();
+            const rotationMatrixX = new THREE.Matrix4();
+            const rotationMatrixZ = new THREE.Matrix4();
 
             if (size.x > size.y && size.x > size.z) {
-                console.log("X es el eje más alto, rotamos 90° en Y.");
-                rotationMatrix.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
-                mesh.applyMatrix4(rotationMatrix);
+                console.log("X es el eje más alto, rotamos 90° en Y y -90° en Z.");
+                rotationMatrixX.makeRotationFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
+                rotationMatrixZ.makeRotationFromEuler(new THREE.Euler(0, 0, -Math.PI / 2));
+                mesh.applyMatrix4(rotationMatrixX);
+                mesh.applyMatrix4(rotationMatrixZ);
             } else if (size.y > size.x && size.y > size.z) {
-                console.log("Y es el eje más alto, rotamos -90° en X.");
-                rotationMatrix.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
-                mesh.applyMatrix4(rotationMatrix);
+                console.log("Y es el eje más alto, rotamos -90° en X y 90° en Z.");
+                rotationMatrixX.makeRotationFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+                rotationMatrixZ.makeRotationFromEuler(new THREE.Euler(0, 0, Math.PI / 2));
+                mesh.applyMatrix4(rotationMatrixX);
+                mesh.applyMatrix4(rotationMatrixZ);
             } else {
                 console.log("El modelo ya está correctamente orientado.");
             }
